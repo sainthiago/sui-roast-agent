@@ -2,7 +2,7 @@
 
 import { generateText } from "ai"
 import { openai } from "@ai-sdk/openai"
-import { getWalletData, type WalletData } from "./utils/sui"
+import { getWalletData, type WalletData } from "./sui"
 
 function formatBalance(balance: string): string {
   const balanceNum = Number.parseInt(balance) / 1000000000 // Convert from MIST to SUI
