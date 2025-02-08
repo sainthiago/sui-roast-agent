@@ -1,5 +1,7 @@
 "use client";
 
+import { RoastResult } from "@/components/roast-result";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -11,10 +13,6 @@ import { Input } from "@/components/ui/input";
 import { AnimatePresence, motion } from "framer-motion";
 import { AlertCircle, Flame, Loader2 } from "lucide-react";
 import { useState } from "react";
-
-import { RoastResult } from "@/components/roast-result";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { generateRoast } from "../../utils/actions";
 
 export default function RoastPage() {
   const [address, setAddress] = useState("");
@@ -30,12 +28,21 @@ export default function RoastPage() {
     setRoastResult(null);
 
     try {
-      const result = await generateRoast(address);
-      if (result.includes("Oops!") || result.includes("Hey there!")) {
-        setError(result);
-      } else {
-        setRoastResult(result);
+      const response = await fetch("/api/roast", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ address }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error);
       }
+
+      setRoastResult(data.roast);
     } catch (err: any) {
       setError(err.message || "Failed to generate roast. Please try again.");
     } finally {

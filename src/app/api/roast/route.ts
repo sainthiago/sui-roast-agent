@@ -1,4 +1,5 @@
-import { getWalletData, type WalletData } from "./sui";
+import { NextResponse } from "next/server";
+import { getWalletData, WalletData } from "../../../../utils/sui";
 
 function formatBalance(balance: string): string {
   const balanceNum = Number.parseInt(balance) / 1000000000; // Convert from MIST to SUI
@@ -45,15 +46,21 @@ Wallet Analysis:
 }
 
 function isValidSuiAddress(address: string): boolean {
-  // SUI addresses start with 0x and are hex strings
   return /^0x[a-fA-F0-9]{64}$/.test(address);
 }
 
-export async function generateRoast(address: string): Promise<string> {
+export async function POST(request: Request) {
   try {
-    // Updated validation for SUI addresses
-    if (!isValidSuiAddress(address)) {
-      throw new Error("Invalid SUI address format");
+    const { address } = await request.json();
+
+    if (!address || !isValidSuiAddress(address)) {
+      return NextResponse.json(
+        {
+          error:
+            "Hey there! That doesn't look like a valid SUI address... Did you copy-paste it correctly, or are you trying to bamboozle me? 🤔",
+        },
+        { status: 400 }
+      );
     }
 
     // Fetch wallet data
@@ -69,9 +76,7 @@ export async function generateRoast(address: string): Promise<string> {
           "Content-Type": "application/json",
           Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
           "HTTP-Referer":
-            typeof window !== "undefined"
-              ? window.location.origin
-              : "http://localhost:3000",
+            process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
           "X-Title": "SUI Roast Agent",
         },
         body: JSON.stringify({
@@ -108,28 +113,32 @@ export async function generateRoast(address: string): Promise<string> {
     if (!response.ok) {
       const error = await response.json();
       console.error("OpenRouter API Error:", error);
-      throw new Error(error.message || "Failed to generate roast");
+      return NextResponse.json(
+        { error: "Failed to generate roast" },
+        { status: 500 }
+      );
     }
 
     const data = await response.json();
     const roast = data.choices[0]?.message?.content;
 
     if (!roast) {
-      throw new Error("No roast generated");
+      return NextResponse.json(
+        { error: "No roast generated" },
+        { status: 500 }
+      );
     }
 
-    return roast;
+    return NextResponse.json({ roast });
   } catch (error: any) {
-    console.error("Error generating roast:", error);
+    console.error("Error in roast API:", error);
 
-    if (error.message === "Invalid SUI address format") {
-      return "Hey there! That doesn't look like a valid SUI address... Did you copy-paste it correctly, or are you trying to bamboozle me? 🤔\n\nMake sure it's a valid SUI address starting with '0x' followed by 64 hexadecimal characters! Let's try again! 🎯";
-    }
-
-    if (error.message?.includes("API key")) {
-      return "Oops! Looks like my roasting powers are temporarily offline (API key issues). Please try again later! 🔧";
-    }
-
-    return "Oops! Either this wallet is too hot to handle, or something went wrong! 🌶️\n\nMake sure you've entered a valid SUI wallet address, and let's try roasting again! 🔥";
+    return NextResponse.json(
+      {
+        error:
+          "Oops! Either this wallet is too hot to handle, or something went wrong! 🌶️\n\nMake sure you've entered a valid SUI wallet address, and let's try roasting again! 🔥",
+      },
+      { status: 500 }
+    );
   }
 }
