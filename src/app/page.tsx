@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { AnimatePresence, motion } from "framer-motion";
-import { AlertCircle, Flame, Search } from "lucide-react";
+import { AlertCircle, Flame, Loader2 } from "lucide-react";
 import { useState } from "react";
 
 import { RoastResult } from "@/components/roast-result";
@@ -27,17 +27,25 @@ export default function RoastPage() {
 
     setIsRoasting(true);
     setError(null);
+    setRoastResult(null);
 
     try {
       const result = await generateRoast(address);
-      setRoastResult(result);
-    } catch (err) {
-      setError(
-        "Failed to generate roast. Please check the wallet address and try again."
-      );
+      if (result.includes("Oops!") || result.includes("Hey there!")) {
+        setError(result);
+      } else {
+        setRoastResult(result);
+      }
+    } catch (err: any) {
+      setError(err.message || "Failed to generate roast. Please try again.");
     } finally {
       setIsRoasting(false);
     }
+  };
+
+  const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setAddress(e.target.value);
+    setError(null);
   };
 
   return (
@@ -60,7 +68,7 @@ export default function RoastPage() {
             className="text-lg text-gray-600"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.5 }}
+            transition={{ delay: 0.3 }}
           >
             Prepare to get absolutely grilled based on your wallet choices!
           </motion.p>
@@ -78,7 +86,7 @@ export default function RoastPage() {
                 <Input
                   placeholder="Enter SUI wallet address (if you dare...)"
                   value={address}
-                  onChange={(e) => setAddress(e.target.value)}
+                  onChange={handleAddressChange}
                   className="text-lg"
                   disabled={isRoasting}
                 />
@@ -91,21 +99,12 @@ export default function RoastPage() {
               >
                 {isRoasting ? (
                   <div className="flex items-center gap-2">
-                    <motion.div
-                      animate={{ rotate: 360 }}
-                      transition={{
-                        duration: 2,
-                        repeat: Number.POSITIVE_INFINITY,
-                        ease: "linear",
-                      }}
-                    >
-                      <Flame className="w-5 h-5" />
-                    </motion.div>
+                    <Loader2 className="h-4 w-4 animate-spin" />
                     Roasting...
                   </div>
                 ) : (
                   <>
-                    <Search className="w-5 h-5 mr-2" />
+                    <Flame className="w-5 h-5 mr-2" />
                     Roast Me!
                   </>
                 )}
@@ -121,7 +120,9 @@ export default function RoastPage() {
                 >
                   <Alert variant="destructive">
                     <AlertCircle className="h-4 w-4" />
-                    <AlertDescription>{error}</AlertDescription>
+                    <AlertDescription className="ml-2">
+                      {error}
+                    </AlertDescription>
                   </Alert>
                 </motion.div>
               )}
