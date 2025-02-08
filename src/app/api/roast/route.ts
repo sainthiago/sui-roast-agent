@@ -130,7 +130,7 @@ export async function POST(request: Request) {
             "X-Title": "SUI Roast Agent",
           },
           body: JSON.stringify({
-            model: "anthropic/claude-2",
+            model: "meta-llama/llama-3.3-70b-instruct:free",
             messages: [
               {
                 role: "system",
