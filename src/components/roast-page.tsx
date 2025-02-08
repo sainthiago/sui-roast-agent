@@ -3,16 +3,16 @@
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { AnimatePresence, motion } from "framer-motion";
 import { AlertCircle, Flame, Loader2 } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
-import { RoastResult } from "./roast-result";
 
 interface RoastResponse {
   roast?: string;
@@ -185,14 +185,38 @@ export const RoastPage = () => {
         </motion.div>
 
         <Dialog open={!!roastResult} onOpenChange={() => setRoastResult(null)}>
-          <DialogContent className="max-w-2xl">
+          <DialogContent className="max-w-2xl h-[500px] bg-gradient-to-br from-orange-100 to-red-100">
             <DialogHeader>
-              <DialogTitle className="text-2xl font-bold text-orange-600 flex items-center gap-2">
+              <DialogTitle className="md:text-2xl font-bold text-orange-600 flex items-center gap- justify-center text-md">
                 <Flame className="w-6 h-6" />
                 Your Roast is Served! 🔥
               </DialogTitle>
             </DialogHeader>
-            <RoastResult roast={roastResult || ""} />
+            <div className="p-6 rounded-lg bg-gradient-to-br from-orange-50 to-red-50 overflow-y-scroll">
+              {roastResult?.split("\n").map((line, i) => (
+                <motion.p
+                  key={i}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.1 * i }}
+                  className="mb-4 text-gray-800 last:mb-0 text-sm"
+                >
+                  {line}
+                </motion.p>
+              ))}
+            </div>
+            <Button
+              variant="secondary"
+              asChild
+              className="inline-flex w-full items-center gap-2 text-black"
+            >
+              <Link
+                href={`https://twitter.com/intent/tweet?${roastResult?.toString()}`}
+                target="_blank"
+              >
+                Share on X
+              </Link>
+            </Button>
           </DialogContent>
         </Dialog>
       </div>
