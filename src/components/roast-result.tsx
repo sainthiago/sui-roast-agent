@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import { motion } from "framer-motion"
+import { motion } from "framer-motion";
 
 export function RoastResult({ roast }: { roast: string }) {
   return (
@@ -29,6 +29,5 @@ export function RoastResult({ roast }: { roast: string }) {
         ))}
       </motion.div>
     </motion.div>
-  )
+  );
 }
-
