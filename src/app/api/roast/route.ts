@@ -187,16 +187,19 @@ export async function POST(request: Request) {
 
       return NextResponse.json({ roast });
     } catch (error) {
-      if (error.name === "AbortError") {
+      const err = error as Error;
+      if (err.name === "AbortError") {
         throw new Error("OpenRouter API request timed out");
       }
       throw error;
     }
-  } catch (error: any) {
+  } catch (error) {
+    const err = error as Error; // Type assertion to Error
+
     console.error("Error in roast API:", {
-      name: error.name,
-      message: error.message,
-      stack: error.stack,
+      name: err.name,
+      message: err.message,
+      stack: err.stack,
     });
 
     // Determine the appropriate error message based on the error type
@@ -204,13 +207,13 @@ export async function POST(request: Request) {
       "Oops! Something went wrong while roasting your wallet! 🌶️";
     let statusCode = 500;
 
-    if (error.message.includes("OPENROUTER_API_KEY")) {
+    if (err.message.includes("OPENROUTER_API_KEY")) {
       errorMessage =
         "The roast master is taking a coffee break (API configuration issue). Please try again later! ☕";
-    } else if (error.message.includes("timed out")) {
+    } else if (err.message.includes("timed out")) {
       errorMessage =
         "Whew! Your wallet is so complex it made our roaster overheat! Try again? 🔥";
-    } else if (error.message.includes("SUI")) {
+    } else if (err.message.includes("SUI")) {
       errorMessage =
         "Had some trouble reading your SUI wallet. Are you sure it exists? 🤔";
       statusCode = 400;

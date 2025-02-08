@@ -3,10 +3,10 @@
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { AnimatePresence, motion } from "framer-motion";
@@ -72,13 +72,15 @@ export const RoastPage = () => {
         }
 
         setRoastResult(data.roast);
-      } catch (e) {
-        if (e.name === "AbortError") {
+      } catch (error) {
+        const err = error as Error;
+        if (err.name === "AbortError") {
           throw new Error("Request timed out. Please try again.");
         }
-        throw e;
+        throw err;
       }
-    } catch (err: any) {
+    } catch (error) {
+      const err = error as Error;
       console.error("Error in handleRoast:", {
         name: err.name,
         message: err.message,

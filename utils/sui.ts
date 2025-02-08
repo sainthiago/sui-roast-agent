@@ -19,7 +19,9 @@ const suiClient = new SuiClient({
   url: "https://fullnode.mainnet.sui.io",
 });
 
-export async function getWalletData(address: string): Promise<WalletData | null> {
+export async function getWalletData(
+  address: string
+): Promise<WalletData | null> {
   try {
     const [balance, objectsData, txData] = await Promise.all([
       suiClient.getBalance({
@@ -39,7 +41,7 @@ export async function getWalletData(address: string): Promise<WalletData | null>
 
     // Format NFTs - now checking for any NFT-like objects
     const nfts = (objectsData?.data || [])
-      .filter((obj: any) => {
+      .filter((obj) => {
         const type = obj?.data?.type || "";
         return (
           type.toLowerCase().includes("nft") ||
@@ -48,17 +50,17 @@ export async function getWalletData(address: string): Promise<WalletData | null>
             obj?.data?.display?.data?.description)
         );
       })
-      .map((obj: any) => ({
+      .map((obj) => ({
         name: obj?.data?.display?.data?.name || "Unnamed NFT",
         collection: obj?.data?.display?.data?.creator || "Unknown Collection",
       }));
 
     // Format transactions
-    const transactions = (txData?.data || []).map((tx: any) => ({
+    const transactions = (txData?.data).map((tx) => ({
       type: tx?.transaction?.data?.transaction?.kind || "Unknown",
-      timestamp: new Date(Number(tx.timestamp) * 1000).toISOString(),
-      amount: tx?.transaction?.data?.transaction?.amount,
-      token: tx?.transaction?.data?.transaction?.token,
+      timestamp: new Date(Number(tx.timestampMs) * 1000).toISOString(),
+      /*       amount: tx?.transaction?.data?.transaction?.amount,
+      token: tx?.transaction?.data?.transaction?.token, */
     }));
 
     const oldestTx =
