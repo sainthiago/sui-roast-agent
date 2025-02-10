@@ -9,5 +9,3 @@ The SUI Roast Agent is a unique application that roasts a given wallet address b
 - **Blockchain Analysis**: Utilizes `@mysten/sui.js` to perform checks on the SUI blockchain, providing insights into wallet activity, owned tokens, and NFTs.
 - **AI-Powered Roasting**: Employs OpenRouter with the model `meta-llama/llama-3.3-70b-instruct:free` to generate humorous and insightful roasts.
 - **Social Sharing**: Easily share the roast on Twitter to engage with your social network.
-
-# sui-roast-agent
