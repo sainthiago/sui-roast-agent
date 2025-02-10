@@ -3,10 +3,10 @@
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { AnimatePresence, motion } from "framer-motion";
@@ -213,7 +213,11 @@ export const RoastPage = () => {
               className="inline-flex w-full items-center gap-2 text-black"
             >
               <Link
-                href={`https://twitter.com/intent/tweet?${roastResult?.toString()}`}
+                href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
+                  `I just got roasted by SUI Roast Agent: check it out at https://sui-roast-agent.vercel.app/ || ${
+                    roastResult?.toString() || ""
+                  }`
+                )}`}
                 target="_blank"
               >
                 Share on X
